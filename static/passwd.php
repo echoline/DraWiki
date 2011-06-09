@@ -20,7 +20,7 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 
 	$url = '';
 
-	include 'login.php';
+	require 'login.php';
 
 	$my_mysql = mysql_connect($my_host, $my_user, $my_pass);
 	if ($my_mysql == NULL)
