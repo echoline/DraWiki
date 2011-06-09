@@ -1,1 +1,17 @@
 php drawing wiki.  puts out mostly svg, not html.
+
+apache config like so, or so:
+
+	<VirtualHost 96.126.101.203:80>
+	    DocumentRoot "/srv/http/b.echoline.org"
+	    ServerName b.echoline.org
+	    ErrorLog "/var/log/httpd/b.echoline.org-error_log"
+	    CustomLog "/var/log/httpd/b.echoline.org-access_log" common
+	    RewriteEngine On
+
+	    RewriteRule /static/(.*) /srv/http/b.echoline.org/static/$1
+
+	    RewriteCond %{REQUEST_FILENAME} !-f
+	    RewriteRule .* /srv/http/b.echoline.org/board.php
+	</VirtualHost>
+
