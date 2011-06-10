@@ -60,7 +60,8 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 			. '" stroke-width="4" fill="none" id="' 
 			. $row[1] . '" d="' . $row[2] . "\"/>\n";
 	}
-
+?>
+<?php
 	if (($protected == 0) || ($_COOKIE['passwd'] == $passwd)) {
 ?>
 <a xlink:href="javascript:save();"><text x="10" y="20" fill="blue" id="save">Save</text></a>

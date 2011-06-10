@@ -1,3 +1,9 @@
+function valmd5(form) {
+	for (var i = 2; i < 4; i++) {
+		form.elements[i].value = MD5(form.elements[i].value);
+	}
+}
+
 /**
 *
 *  MD5 (Message-Digest Algorithm)

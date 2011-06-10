@@ -23,7 +23,7 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 	if (!isset($_POST['json']) || !isset($_POST['url']))
 		die ("post, haste!");
 
-	require 'login.php';
+	require '../login.php';
 
 	$my_mysql = mysql_connect($my_host, $my_user, $my_pass);
 	if ($my_mysql == NULL)

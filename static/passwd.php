@@ -20,7 +20,7 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 
 	$url = '';
 
-	require 'login.php';
+	require '../login.php';
 
 	$my_mysql = mysql_connect($my_host, $my_user, $my_pass);
 	if ($my_mysql == NULL)
@@ -55,12 +55,12 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 	if ($rows == 0) {
 		if (!isset($_POST['url'])) {
 ?>
-<form method="post" action="/static/passwd.php">
+<form method="post" action="/static/passwd.php" onsubmit="valmd5(this);">
 	<fieldset>
 	<legend>Create password</legend>
 	<input type="hidden" name="url" value="<?php echo $url ?>"/>
-	<label>Password: <input type="password" name="pass[0]" onblur="this.value = MD5(this.value)"/></label><br/>
-	<label>Confirm: <input type="password" name="pass[1]" onblur="this.value = MD5(this.value)"/></label><br/>
+	<label>Password: <input type="password" name="pass[0]"/></label><br/>
+	<label>Confirm: <input type="password" name="pass[1]"></label><br/>
 	<input type="submit" value="Set password"/>
 	</fieldset>
 </form>
@@ -94,11 +94,11 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 	} else if (!isset($_POST['url'])) {
 		if (!isset($_POST['passwd'])) {
 ?>
-<form method="post" action="/static/passwd.php">
+<form method="post" action="/static/passwd.php" onsubmit="this.passwd.value = MD5(this.passwd.value);">
 	<fieldset>
 	<legend>Enter password</legend>
 	<input type="hidden" name="url" value="<?php echo $url ?>"/>
-	<label>Password: <input type="password" name="passwd" onblur="this.value = MD5(this.value)"/></label><br/>
+	<label>Password: <input type="password" name="passwd"/></label><br/>
 	<input type="submit" value="Authenticate"/>
 	</fieldset>
 </form>
@@ -123,13 +123,7 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 		}
 	} else {
 ?>
-<script>
-<!--
-	document.cookie = 'passwd=<?php echo $_POST['passwd']; ?>; path=/;';
--->
-</script>
-<p>authenticated</p>
-<p><a href="<?php echo $url ?>">return</a></p>
+<p>incorrect password</p>
 <?php
 	}
 ?>
