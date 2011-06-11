@@ -55,11 +55,11 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 			continue;
 
 		mysql_query('replace into paths values (\'' . $url . '\', \'' .
-		    mysql_real_escape_string($paths[$i]['attributes']['id']) .
+		    htmlentities(mysql_real_escape_string($paths[$i]['attributes']['id'])) .
 		    '\', \'' .
-		    mysql_real_escape_string($paths[$i]['attributes']['d']) .
+		    htmlentities(mysql_real_escape_string($paths[$i]['attributes']['d'])) .
 		    '\', \'' .
-		    mysql_real_escape_string($paths[$i]['attributes']['stroke']) .
+		    htmlentities(mysql_real_escape_string($paths[$i]['attributes']['stroke'])) .
 		    '\')') or
 			die(mysql_error($my_mysql));
 	}

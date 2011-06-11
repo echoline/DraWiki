@@ -24,8 +24,9 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 		die ("post, haste!");
 
 	if (isset($_POST['json']) && (json_decode($_POST['json']) != NULL))
-		system('echo -e ' . escapeshellarg($_POST['url']) . '\|' .
-			escapeshellarg($_POST['json']) . ' >> ../data ');
+		system('echo -e ' . escapeshellarg($_POST['url']) . '\|' 
+			. htmlentities(escapeshellarg($_POST['json'])) 
+			.  ' >> ../data ');
 
 	system('grep ' . escapeshellarg($_POST['url']) . '\| ../data | tail');
 
