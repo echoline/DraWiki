@@ -20,8 +20,9 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 var xmlns = "http://www.w3.org/2000/svg"
 var clicked = false;
 var res;
-var json = "";
-var col = "black";
+var col = "blue";
+var last = Math.round((new Date()).getTime() / 1000.0);
+var size = "4";
 
 function connect() {
 	var conn = new XMLHttpRequest();
@@ -31,93 +32,168 @@ function connect() {
 		if ((conn.readyState == 4) && (conn.status == 200)) {
 			if (conn.responseText.length != 0) {
 				var lines = conn.responseText.split("\n");
-				for (var i = 0; i < lines.length; i++) {
-					var str = lines[i].split("|")[1];
-					if (str != undefined) {
+				var now = parseInt (lines[0]);
+
+				//alert (conn.responseText);
+
+				if (now > last)
+				{
+					if (last == 0) {
+		// TODO
+					}
+					last = now;
+				}
+				for (var i = 1; i < lines.length; i++) {
+					var str = lines[i];
+					if (str != undefined && str != '') {
 						var p = JSON.parse(str);
-						if (document.getElementById(p.attributes.id) == undefined) {
+						var id = p[1];
+						var e = document.getElementById(id);
+						if ((p[3] != "1") && (e == undefined)) {
 							var n = document.createElementNS(xmlns, "path");
-							n.setAttributeNS(null, "id", p.attributes.id);
-							n.setAttributeNS(null, "stroke", p.attributes.stroke);
+							n.setAttributeNS(null, "id", p[1]);
+							n.setAttributeNS(null, "stroke", p[2]);
 							n.setAttributeNS(null, "fill", "none");
-							n.setAttributeNS(null, "stroke-width", "4");
-							n.setAttributeNS(null, "d", p.attributes.d);
-							document.getElementById("unsaved").appendChild(n);
+							n.setAttributeNS(null, "stroke-width", p[4]);
+							n.setAttributeNS(null, "d", p[0]);
+							n.oncontextmenu=erase;
+							document.getElementById("saved").appendChild(n);
+						} else if ((p[3] == "1") && (e != null)) {
+							document.getElementById("saved").removeChild(e);
 						}
 					}
 				}
 			}
-			connect();
+			setTimeout('connect()', 15);
 		}
 	};
-	if (json != "") {
-		conn.setRequestHeader("Content-length", window.location.href.length + 10 + json.length);
-		conn.send("url=" + window.location.href + "&json=" + json);
+	conn.send("last=" + last + "&url=" + window.here);
+}
+
+function startmove(X, Y) {
+	res = Math.floor (Math.random() * 1000001);
+	var p = document.getElementById(res);
+	if (p == null) {
+		p = document.createElementNS(xmlns, "path");
+		p.setAttributeNS(null, "id", res);
+		p.setAttributeNS(null, "stroke", col);
+		p.setAttributeNS(null, "fill", "none");
+		p.setAttributeNS(null, "stroke-width", size);
+		p.setAttributeNS(null, "d", "M " + X + " " + Y);
+		p.oncontextmenu=erase;
+		document.getElementById("unsaved").appendChild(p);
 	} else {
-		conn.setRequestHeader("Content-length", window.location.href.length + 4);
-		conn.send("url=" + window.location.href);
+		var d = p.getAttributeNS(null, "d");
+		d = d.replace(/$/, " L " + X + " " + Y);
+		p.setAttributeNS(null, "d", d);
 	}
-	json = "";
+	clicked = true;
+}
+
+function endmove() {
+	clicked = false;
+
+	save ();
+}
+
+window.lastx = 0;
+window.lasty = 0;
+window.here = url;
+
+function move(X, Y) {
+	if (clicked == false)
+		return;
+
+	var dx = X - window.lastx;
+	var dy = Y - window.lasty;
+	var dist = Math.sqrt(dx*dx + dy*dy);
+	if (dist > 2) {
+		window.lastx = X;
+		window.lasty = Y;
+		var p = document.getElementById(res);
+		var d = p.getAttributeNS(null, "d");
+		d = d.replace(/$/, " L " + X + " " + Y);
+		p.setAttributeNS(null, "d", d);
+	}
+}
+
+function mousedown(evt) {
+	startmove(evt.pageX, evt.pageY);
+}
+
+function mousemove(evt) {
+	move(evt.pageX, evt.pageY);
+}
+
+function mouseup(evt) {
+	endmove();
+}
+
+function getCoors(e) {
+	if (e.touches && e.touches.length) { 	// iPhone
+		return e.touches[0];
+	}
+	return e;
+}
+
+function touchstart(evt) {
+	evt.preventDefault();
+	e = getCoors(evt);
+	startmove(e.clientX, e.clientY);
+}
+
+function touchmove(evt) {
+	evt.preventDefault();
+	e = getCoors(evt);
+	move(e.clientX, e.clientY);
+}
+
+function touchend(evt) {
+	endmove();
 }
 
 function setup(evt) {
 	connect();
 
-	document.onmousedown = function(evt) {
-		res = new Date().getTime();
-		var p = document.getElementById(res);
-		if (p == null) {
-			p = document.createElementNS(xmlns, "path");
-			p.setAttributeNS(null, "id", res);
-			p.setAttributeNS(null, "stroke", col);
-			p.setAttributeNS(null, "fill", "none");
-			p.setAttributeNS(null, "stroke-width", "4");
-			p.setAttributeNS(null, "d", "M " + evt.pageX + " " + evt.pageY);
-			document.getElementById("unsaved").appendChild(p);
-		} else {
-			var d = p.getAttributeNS(null, "d");
-			d = d.replace(/$/, " L " + evt.pageX + " " + evt.pageY);
-			p.setAttributeNS(null, "d", d);
-		}
-		clicked = true;
-	}
-
-	document.onmouseup = function(evt) {
-		clicked = false;
-
-		var p = document.getElementById(res);
-		json = JSON.stringify(xmlToJson(p));
-	}
-
-	document.onmousemove = function(evt) {
-		if (clicked == false)
-			return;
-
-		var p = document.getElementById(res);
-		var d = p.getAttributeNS(null, "d");
-		d = d.replace(/$/, " L " + evt.pageX + " " + evt.pageY);
-		p.setAttributeNS(null, "d", d);
-	}
+	document.addEventListener("touchstart", touchstart, false);
+	document.addEventListener("touchmove", touchmove, false);
+	document.addEventListener("touchend", touchend, false);
+	document.addEventListener("mousedown", mousedown, false);
+	document.addEventListener("mousemove", mousemove, false);
+	document.addEventListener("mouseup", mouseup, false);
 }
 
 function save() {
 	var paths = document.getElementById("unsaved").getElementsByTagName("path");
-	var out = "url=" + window.location.href + "&json={\"paths\": [";
+	if (paths.length == 0)
+		return;
+
+	var path;
+	var out = "url=" + window.here + "&json={\"paths\":[";
 	for (var i = 0; i < (paths.length-1); i++) {
-		out += JSON.stringify(xmlToJson(paths[i])) + ",";
+		path = paths[i];
+		out += JSON.stringify([path.getAttributeNS(null, "id"),
+					path.getAttributeNS(null, "d"),
+					path.getAttributeNS(null, "stroke"),
+					path.getAttributeNS(null, "stroke-width")]) + ",";
+		document.getElementById("saved").appendChild (path);
 	}
-	out += JSON.stringify(xmlToJson(paths[paths.length-1])) + "]}";
+	path = paths[paths.length-1];
+	out += JSON.stringify([path.getAttributeNS(null, "id"),
+				path.getAttributeNS(null, "d"),
+				path.getAttributeNS(null, "stroke"),
+				path.getAttributeNS(null, "stroke-width")]) + "]}";
+	document.getElementById("saved").appendChild (path);
+
 	var xhr = new XMLHttpRequest();
-	document.getElementById("save").childNodes[0].nodeValue = "Saving...";
 	xhr.open("POST", "/static/save.php");
 	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhr.setRequestHeader("Content-length", out.length);
 	xhr.onreadystatechange = function() {
 		if ((xhr.readyState == 4) && (xhr.status == 200)) {
-			document.getElementById("save").childNodes[0].nodeValue = "Save";
-			alert(xhr.responseText);
+			if (xhr.responseText.length > 0)
+				alert(xhr.responseText);
 		}
-	};
+	}; 
 	xhr.send(out);
 }
 
@@ -125,42 +201,28 @@ function color(n) {
 	col = n.getAttributeNS(null, "fill");
 }
 
-// Changes XML to JSON
-function xmlToJson(xml) {
-  
-  // Create the return object
-  var obj = {};
+function brush(n) {
+	size = n;
+}
 
-  if (xml.nodeType == 1) { // element
-    // do attributes
-    if (xml.attributes.length > 0) {
-    obj["attributes"] = {};
-      for (var j = 0; j < xml.attributes.length; j++) {
-        var attribute = xml.attributes.item(j);
-        obj["attributes"][attribute.nodeName] = attribute.nodeValue;
-      }
-    }
-  } else if (xml.nodeType == 3) { // text
-    obj = xml.nodeValue;
-  }
+function erase(evt) {
+	var path = evt.target;
 
-  // do children
-  if (xml.hasChildNodes) {
-    for(var i = 0; i < xml.childNodes.length; i++) {
-      var item = xml.childNodes.item(i);
-      var nodeName = item.nodeName;
-      if (typeof(obj[nodeName]) == "undefined") {
-        obj[nodeName] = xmlToJson(item);
-      } else {
-        if (typeof(obj[nodeName].length) == "undefined") {
-          var old = obj[nodeName];
-          obj[nodeName] = [];
-          obj[nodeName].push(old);
-        }
-        obj[nodeName].push(xmlToJson(item));
-      }
-    }
-  }
-  return obj;
-};
+	var out = "url=" + window.here + "&json={\"paths\":[";
+	out += JSON.stringify([path.getAttributeNS(null, "id")]) + "]}";
 
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", "/static/erase.php");
+	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhr.onreadystatechange = function() {
+		if ((xhr.readyState == 4) && (xhr.status == 200)) {
+			if (xhr.responseText == '1')
+				document.getElementById("saved").removeChild (path);
+			else if (xhr.responseText != '0')
+				alert (xhr.responseText);
+		}
+	}; 
+	xhr.send(out);
+
+	return false;
+}

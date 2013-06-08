@@ -17,75 +17,100 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 	*/
-
-	header('Content-type: image/svg+xml');
-
-	require 'login.php';
-
-	$my_mysql = mysql_connect($my_host, $my_user, $my_pass);
-	if ($my_mysql == NULL)
-		die (mysql_error($my_mysql));
-
-	mysql_select_db('whiteboard', $my_mysql) or 
-		die (mysql_error($my_mysql));
-
-	$url = mysql_real_escape_string('http://' . $_SERVER['SERVER_NAME'] . 
-					$_SERVER['REQUEST_URI']);
-
-	$results = mysql_query('select passwd from passwds where url=\'' . 
-				$url . '\'', $my_mysql);
-	if ($results == NULL)
-		die (mysql_error($my_mysql));
-
-	$protected = mysql_num_rows($results);
-	if ($protected != 0) {
-		$row = mysql_fetch_row($results);
-		$passwd = $row[0];
-	}
-
-	$results = mysql_query('select * from paths where url=\'' . 
-				$url . '\'', $my_mysql);
-	if ($results == NULL)
-		die (mysql_error($my_mysql));
 ?>
-<?xml version="1.0" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" onload="setup(evt);" width="100%" height="100%">
-<script xlink:href="/static/board.js"></script>
-<?php
-	$rows = mysql_num_rows($results);
-	for ($i = 0; $i < $rows; $i++) {
-		$row = mysql_fetch_row($results);
-		echo '<path stroke="' . $row[3] 
-			. '" stroke-width="4" fill="none" id="' 
-			. $row[1] . '" d="' . $row[2] . "\"/>\n";
-	}
-?>
-<?php
-	if (($protected == 0) || ($_COOKIE['passwd'] == $passwd)) {
-?>
-<a xlink:href="javascript:save();"><text x="10" y="20" fill="blue" id="save">Save</text></a>
-<?php
-		if ($protected == 0) {
-?>
-<a xlink:href="/static/passwd.php"><text x="90" y="20" fill="blue">Set password required to save</text></a>
-<?php
-		}
-	} else {
-?>
-<a xlink:href="/static/passwd.php"><text x="10" y="20" fill="blue">Login</text></a>
-<?php
-	}
-?>
-<rect x="10" y="30" width="10" height="10" fill="black" stroke="black" onclick="color(this)"/>
-<rect x="10" y="50" width="10" height="10" fill="brown" stroke="black" onclick="color(this)"/>
-<rect x="10" y="70" width="10" height="10" fill="red" stroke="black" onclick="color(this)"/>
-<rect x="10" y="90" width="10" height="10" fill="orange" stroke="black" onclick="color(this)"/>
-<rect x="10" y="110" width="10" height="10" fill="yellow" stroke="black" onclick="color(this)"/>
-<rect x="10" y="130" width="10" height="10" fill="green" stroke="black" onclick="color(this)"/>
-<rect x="10" y="150" width="10" height="10" fill="blue" stroke="black" onclick="color(this)"/>
-<rect x="10" y="170" width="10" height="10" fill="purple" stroke="black" onclick="color(this)"/>
-<rect x="10" y="190" width="10" height="10" fill="pink" stroke="black" onclick="color(this)"/>
-<rect x="10" y="210" width="10" height="10" fill="white" stroke="black" onclick="color(this)"/>
-<g id="unsaved"/>
-</svg>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<link href="/static/default.css" type="text/css" rel="stylesheet"/>
+	<title>Multiplayer Paint</title>
+	<script src="/static/page.js"></script>
+</head>
+<body>
+<div id="wrapper">
+	<div id="header">
+		<div id="logo">
+			<h1>echoline.org</h1>
+			<p><?php
+
+#	if ($_SERVER['REQUEST_URI'] == '/')
+#		echo 'drawingrooms';
+#	else
+	echo substr(htmlentities(urldecode($_SERVER['REQUEST_URI'])), 1);
+
+			?></p>
+		</div>
+	</div>
+	<div id="page">
+		<div id="content">
+	<embed id="board" src="/static/board.php?url=<?php
+
+	echo htmlentities($_SERVER['REQUEST_URI']);
+
+	?>" type="image/svg+xml" style="width:960px; height:480px; border:2px solid black;">
+<p>
+<input type="text" style="width:33%" placeholder="<?php
+
+	if (htmlentities($_SERVER['REQUEST_URI']) == '/')
+		echo "Name your canvas here";
+	else
+		echo substr(htmlentities($_SERVER['REQUEST_URI']), 1);
+
+?>" id="boardname" onkeydown="if (event.keyCode == 13) newboard()"/><input type="button" value="Go" onclick="newboard()"/>
+</p>
+
+<p>Html code to embed this elsewhere:
+<br/>
+<input style="width:100%;" type="text" readonly="readonly" value="&lt;embed src=&quot;http://<?php
+
+echo htmlentities($_SERVER['HTTP_HOST']);
+?>/static/board.php?url=<?php
+echo htmlentities($_SERVER['REQUEST_URI']);
+
+?>&quot; style=&quot;width:960px; height:480px; &quot; type=&quot;image/svg+xml&quot;&gt;
+"></p>
+		</div>
+	</div>
+	<div id="three-column">
+		<div id="tbox1">
+			<ul class="style1">
+				<li>Copyright &copy; 2012-13 Eli Cohen.</li>
+				<li>A <a href="http://neoturbine.net">Neoturbine</a> website.</li>
+				<li>CSS and header image by <a href="http://freecsstemplates.org/">FCT</a>.</li>
+			</ul>
+		</div>
+		<div id="tbox2">
+			<h2>What is this?</h2>
+			<p>This site is for drawing stuff.  It uses AJAX and HTML5 to provide a multiplayer drawing stuff experience.</p>
+		</div>
+		<div id="tbox3">
+			<h2>Remember...</h2>
+			<p>People can draw over what you draw.  Stuff can also be erased by right-clicking strokes made recently, until the page is refreshed.</p>
+		</div>
+	</div>
+<?php /* <iframe src="https://www.facebook.com/plugins/like.php?href=http://<?php
+
+echo htmlentities($_SERVER['HTTP_HOST']);
+echo htmlentities($_SERVER['REQUEST_URI']);
+
+?>"
+	scrolling="no" frameborder="0"
+	style="border:none; width:300px; height:2em;"></iframe> */ ?>
+<div id="footer">
+<p>
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-4649162581902265";
+/* mysite */
+google_ad_slot = "2771843899";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</p>
+	</div>
+</div>
+</body>
+</html>

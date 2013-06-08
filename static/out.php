@@ -20,14 +20,32 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 
 	header('Content-type: text/plain');
 
-	if (!isset($_POST['url']))
+	if (!isset($_POST['url']) || !isset($_POST['last']))
 		die ("post, haste!");
 
-	if (isset($_POST['json']) && (json_decode($_POST['json']) != NULL))
-		system('echo -e ' . escapeshellarg($_POST['url']) . '\|' 
-			. htmlentities(escapeshellarg($_POST['json'])) 
-			.  ' >> ../data ');
+	require '../login.php';
 
-	system('grep ' . escapeshellarg($_POST['url']) . '\| ../data | tail');
+	$my_mysql = mysql_connect($my_host, $my_user, $my_pass);
+	if ($my_mysql == NULL)
+		die (mysql_error($my_mysql));
 
+	mysql_select_db('whiteboard', $my_mysql) or 
+		die (mysql_error($my_mysql));
+
+	$last = mysql_real_escape_string($_POST['last']);
+	$url = mysql_real_escape_string(strtolower($_POST['url']));
+	$hash = substr(base_convert(md5($url), 16, 10), 0, 8);
+
+	print time() . "\n";
+
+//	if ($last == 0)
+//		exit(0);
+
+	$results = mysql_query('select d,id,color,erased,size from paths where (time>=' . $last . ' and hash=\'' . $hash  . '\' and erased=false) or (time>=' . ($last-240) . ' and erased=true);', $my_mysql);
+	if ($results == NULL)
+		die (mysql_error ($my_mysql));
+
+	$rows = mysql_num_rows($results);
+	while ($row = mysql_fetch_row($results))
+		print json_encode ($row) . "\n";
 ?>
