@@ -2,7 +2,7 @@ function newboard(blah) {
 	var boardname = document.getElementById('boardname').value;
 
 	if (boardname.length != 0)
-		window.location.href = 'http://echoline.org/' + boardname;
+		window.location.href = 'http://' + location.hostname + '/' + boardname;
 }
 
 function exportpng() {

@@ -30,7 +30,11 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 <div id="wrapper">
 	<div id="header">
 		<div id="logo">
-			<h1>echoline.org</h1>
+			<h1><?php 
+
+	echo $_SERVER['SERVER_NAME'];
+
+			?></h1>
 			<p><?php
 
 #	if ($_SERVER['REQUEST_URI'] == '/')

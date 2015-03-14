@@ -71,7 +71,6 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 	while ($row = mysql_fetch_row($results))
 		print '<path d="' . $row[2] . '" stroke="' . $row[3] . '" stroke-width="' . $row[7] . '" fill="none"/>' . "\n";
 ?>
-</svg>
-<?php
+</svg><?php
 	ob_end_flush();
 ?>
