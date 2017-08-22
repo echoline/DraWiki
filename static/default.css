@@ -97,8 +97,7 @@ hr {
 
 #header {
 	overflow: hidden;
-	height: 150px;
-	background: url('/static/header.jpg') repeat-x left top;
+	height: 100px;
 }
 
 /* Logo */
@@ -132,7 +131,7 @@ hr {
 	padding: 0px 0px 0px 0px;
 	letter-spacing: 1px;
 	font-size: 1.2em;
-	color: #FFFFFF;
+	color: #888888;
 }
 
 #logo p a

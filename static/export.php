@@ -32,7 +32,7 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 
 	$url = mysql_real_escape_string(strtolower($_GET['url']));
 	$hash = substr(base_convert(md5($url), 16, 10), 0, 8);
-	$ftime = filemtime('./tmp/' . $hash . '.png') + 7;
+	$ftime = filemtime('/tmp/' . $hash . '.png') + 7;
 	$time = time();
 
 	if (file_exists('./tmp/' . $hash . '.png') && ($time < $ftime)) {
@@ -43,7 +43,7 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 	mysql_select_db('whiteboard', $my_mysql) or 
 		die (mysql_error($my_mysql));
 
-	$results = mysql_query('select * from paths where hash=\'' . $hash . '\' and erased=false');
+	$results = mysql_query('select * from paths where hash=\'' . $hash . '\' and erased=false order by time');
 	if ($results == NULL)
 		die (mysql_error ($my_mysql));
 
@@ -53,7 +53,7 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 		unlink ("./tmp/" . $hash . '.png');
 
 		file_put_contents("./tmp/" . $hash . '.svg', $buffer);
-		system ('/usr/bin/convert ./tmp/' . $hash . '.svg ./tmp/' . $hash . '.png');
+		system ('/usr/bin/rsvg-convert ./tmp/' . $hash . '.svg > ./tmp/' . $hash . '.png');
 
 		unlink ('./tmp/' . $hash . '.svg');
 

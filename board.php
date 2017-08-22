@@ -47,11 +47,17 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 	</div>
 	<div id="page">
 		<div id="content">
-	<embed id="board" src="/static/board.php?url=<?php
+<?php
+	if ($_SERVER['REQUEST_URI'] != '/') {
+?>
+		<embed id="board" src="/static/board.php?url=<?php
 
-	echo htmlentities($_SERVER['REQUEST_URI']);
+		echo htmlentities($_SERVER['REQUEST_URI']);
 
-	?>" type="image/svg+xml" style="width:960px; height:480px; border:2px solid black;">
+		?>" type="image/svg+xml" style="width:960px; height:480px; border:2px solid black;">
+<?php
+	}
+?>
 <p>
 <input type="text" style="width:33%" placeholder="<?php
 
@@ -63,6 +69,9 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 ?>" id="boardname" onkeydown="if (event.keyCode == 13) newboard()"/><input type="button" value="Go" onclick="newboard()"/>
 </p>
 
+<?php
+	if ($_SERVER['REQUEST_URI'] != '/') {
+?>
 <p>Html code to embed this elsewhere:
 <br/>
 <input style="width:100%;" type="text" readonly="readonly" value="&lt;embed src=&quot;http://<?php
@@ -73,6 +82,19 @@ echo htmlentities($_SERVER['REQUEST_URI']);
 
 ?>&quot; style=&quot;width:960px; height:480px; &quot; type=&quot;image/svg+xml&quot;&gt;
 "></p>
+
+<p>Right-click link to "save as" png:
+<br/>
+<a href="http://<?php
+
+echo htmlentities($_SERVER['HTTP_HOST']);
+?>/static/export.php?url=<?php
+echo htmlentities($_SERVER['REQUEST_URI']);
+
+?>">save png</a></p>
+<?php
+	}
+?>
 		</div>
 	</div>
 	<div id="three-column">
@@ -80,7 +102,7 @@ echo htmlentities($_SERVER['REQUEST_URI']);
 			<ul class="style1">
 				<li>Copyright &copy; 2012-13 Eli Cohen.</li>
 				<li>A <a href="http://neoturbine.net">Neoturbine</a> website.</li>
-				<li>CSS and header image by <a href="http://freecsstemplates.org/">FCT</a>.</li>
+				<li>CSS by <a href="http://freecsstemplates.org/">FCT</a>.</li>
 			</ul>
 		</div>
 		<div id="tbox2">
