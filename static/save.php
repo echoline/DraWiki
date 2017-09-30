@@ -25,14 +25,11 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 
 	require '../login.php';
 
-	$my_mysql = mysql_connect($my_host, $my_user, $my_pass);
+	$my_mysql = mysqli_connect($my_host, $my_user, $my_pass, 'whiteboard');
 	if ($my_mysql == NULL)
-		die (mysql_error($my_mysql));
+		die (mysqli_error($my_mysql));
 
-	mysql_select_db('whiteboard', $my_mysql) or 
-		die (mysql_error($my_mysql));
-
-	$url = mysql_real_escape_string(strtolower($_POST['url']));
+	$url = mysqli_real_escape_string($my_mysql, strtolower($_POST['url']));
 
 	if (($url == '/') && ($CAN_EDIT_MAIN == FALSE))
 		exit (0);
@@ -49,14 +46,17 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 		if (!preg_match('/ L /', $paths[$i][1]))
 			continue;
 
-		mysql_query('replace into paths values (\'' . $url . '\', \'' .
-		    htmlentities(mysql_real_escape_string($paths[$i][0])) .
-		    '\', \'' .
-		    htmlentities(mysql_real_escape_string($paths[$i][1])) .
-		    '\', \'' .
-		    htmlentities(mysql_real_escape_string($paths[$i][2])) .
-		    '\', \'' . $hash . '\', \'' . time() . '\', false, \'' .
-		    htmlentities(mysql_real_escape_string($paths[$i][3])) . '\')') or
-			die(mysql_error($my_mysql));
+		mysqli_query($my_mysql, 'replace into paths values (\'' . $url
+		    . '\', \'' .
+		    htmlentities(mysqli_real_escape_string($my_mysql,
+		    $paths[$i][0])) . '\', \'' .
+		    htmlentities(mysqli_real_escape_string($my_mysql,
+		    $paths[$i][1])) . '\', \'' .
+		    htmlentities(mysqli_real_escape_string($my_mysql,
+		    $paths[$i][2])) . '\', \'' . $hash . '\', \'' . time() .
+		    '\', false, \'' .
+		    htmlentities(mysqli_real_escape_string($my_mysql,
+		    $paths[$i][3])) . '\')') or
+			die(mysqli_error($my_mysql));
 	}
 ?>

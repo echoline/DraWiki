@@ -25,14 +25,11 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 
 	require '../login.php';
 
-	$my_mysql = mysql_connect($my_host, $my_user, $my_pass);
+	$my_mysql = mysqli_connect($my_host, $my_user, $my_pass, 'whiteboard');
 	if ($my_mysql == NULL)
-		die (mysql_error($my_mysql));
+		die (mysqli_error($my_mysql));
 
-	mysql_select_db('whiteboard', $my_mysql) or 
-		die (mysql_error($my_mysql));
-
-	$url = mysql_real_escape_string(strtolower($_POST['url']));
+	$url = mysqli_real_escape_string($my_mysql, strtolower($_POST['url']));
 
 	$hash = substr(base_convert(md5($url), 16, 10), 0, 8);
 
@@ -42,25 +39,25 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 
 	$paths = $json['paths'];
 
-	$rows = mysql_query('select time from paths where id=' .
-		htmlentities(mysql_real_escape_string($paths[0][0])) .
+	$rows = mysqli_query($my_mysql, 'select time from paths where id=' .
+		htmlentities(mysqli_real_escape_string($my_mysql, $paths[0][0])) .
 		' and url=\'' . $url . '\';') or
-			die(mysql_error($my_mysql));
+			die(mysqli_error($my_mysql));
 
-	if (mysql_num_rows ($rows) == 0) {
+	if (mysqli_num_rows ($rows) == 0) {
 		echo '1';
 		exit (0);
 	}
 
-	$row = mysql_fetch_row ($rows);
+	$row = mysqli_fetch_row ($rows);
 
 	if ($row[0] > (time()-300)) {
-		mysql_query('update paths set time=' . time() .
+		mysqli_query($my_mysql, 'update paths set time=' . time() .
 		    ',erased=true where url=\'' . $url .
 		    '\' and id=' .
-		    htmlentities(mysql_real_escape_string($paths[0][0])) .
-		    ';') or
-			die(mysql_error($my_mysql));
+		    htmlentities(mysqli_real_escape_string($my_mysql,
+		    $paths[0][0])) . ';') or
+			die(mysqli_error($my_mysql));
 		echo '1';
 	} else {
 		echo '0';
