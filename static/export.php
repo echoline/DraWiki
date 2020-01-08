@@ -22,39 +22,31 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 	if (!isset ($_GET['url']))
 		exit(0);
 
-	header ('Content-type: image/png');
-
 	require '../login.php';
 
-	$my_mysql = mysqli_connect($my_host, $my_user, $my_pass, 'whiteboard');
+	$my_mysql = mysqli_connect($my_host, $my_user, $my_pass, $my_db, $my_port, $my_socket);
 	if ($my_mysql == NULL)
 		die (mysqli_error($my_mysql));
 
 	$url = mysqli_real_escape_string($my_mysql, strtolower($_GET['url']));
 	$hash = substr(base_convert(md5($url), 16, 10), 0, 8);
-	$ftime = filemtime('./tmp/' . $hash . '.png') + 7;
-	$time = time();
 
-	if (file_exists('./tmp/' . $hash . '.png') && ($time < $ftime)) {
-		echo file_get_contents('./tmp/' . $hash . '.png');
-		exit (0);
-	}
+	while(file_exists("/tmp/" . $hash . ".lock")) usleep(1000000);
+	touch ("/tmp/" . $hash . ".lock");
 
-	$results = mysqli_query($my_mysql, 'select * from paths where hash=\'' . $hash . '\' and erased=false order by time');
-	if ($results == NULL)
-		die (mysqli_error ($my_mysql));
+	header ('Content-type: image/png');
+	header ('Content-Disposition: inline; filename="' . preg_replace("%/%", "_", $url) . '.png"');
+
+	$results = mysqli_query($my_mysql, 'select * from paths where hash=\'' . $hash . '\' order by time');
 
 	function callback($buffer) {
 		global $hash;
 
-		unlink ("./tmp/" . $hash . '.png');
+		chdir('/');
+		file_put_contents('/tmp/' . $hash . '.svg', $buffer);
+		system ('/usr/local/bin/convert /tmp/' . $hash . '.svg /tmp/' . $hash . '.png');
 
-		file_put_contents("./tmp/" . $hash . '.svg', $buffer);
-		system ('/usr/bin/rsvg-convert ./tmp/' . $hash . '.svg > ./tmp/' . $hash . '.png');
-
-		unlink ('./tmp/' . $hash . '.svg');
-
-		return file_get_contents('./tmp/' . $hash . '.png');
+		return file_get_contents('/tmp/' . $hash . '.png');
 	}
 
 	ob_start("callback");
@@ -63,11 +55,26 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="960" height="480">
 <rect x="0" y="0" width="960" height="480" fill="white" stroke="white"/>
 <?php
+	if (file_exists('/tmp/' . $hash . '.2.png')) {
+?><image x="0" y="0" width="960px" height="480px" href="file:///tmp/<?php
 
-	$rows = mysqli_num_rows($results);
-	while ($row = mysqli_fetch_row($results))
-		print '<path d="' . $row[2] . '" stroke="' . $row[3] . '" stroke-width="' . $row[7] . '" fill="none"/>' . "\n";
+	echo $hash;
+	
+?>.2.png"></image>
+<?php
+	}
+
+	if ($results != NULL) {
+		while ($row = mysqli_fetch_row($results)) {
+			print '<path d="' . $row[2] . '" stroke="' . $row[3] . '" stroke-width="' . $row[7] . '" fill="none"/>' . "\n";
+			$results2 = mysqli_query($my_mysql, 'delete from paths where hash=\'' . $hash . '\' and id=\'' . $row[1] . '\'');
+			if ($results2 == NULL)
+				die (mysqli_error ($my_mysql));
+		}
+	}
 ?>
 </svg><?php
 	ob_end_flush();
+	copy ('/tmp/' . $hash . '.png', '/tmp/' . $hash . '.2.png');
+	unlink("/tmp/" . $hash . '.lock');
 ?>

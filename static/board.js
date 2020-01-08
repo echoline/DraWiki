@@ -56,7 +56,7 @@ function connect() {
 							n.setAttributeNS(null, "fill", "none");
 							n.setAttributeNS(null, "stroke-width", p[4]);
 							n.setAttributeNS(null, "d", p[0]);
-							n.oncontextmenu=erase;
+							//n.oncontextmenu=erase;
 							document.getElementById("saved").appendChild(n);
 						} else if ((p[3] == "1") && (e != null)) {
 							document.getElementById("saved").removeChild(e);
@@ -80,7 +80,7 @@ function startmove(X, Y) {
 		p.setAttributeNS(null, "fill", "none");
 		p.setAttributeNS(null, "stroke-width", size);
 		p.setAttributeNS(null, "d", "M " + X + " " + Y);
-		p.oncontextmenu=erase;
+		//p.oncontextmenu=erase;
 		document.getElementById("unsaved").appendChild(p);
 	} else {
 		var d = p.getAttributeNS(null, "d");
@@ -140,16 +140,19 @@ function touchstart(evt) {
 	evt.preventDefault();
 	e = getCoors(evt);
 	startmove(e.clientX, e.clientY);
+	return false;
 }
 
 function touchmove(evt) {
 	evt.preventDefault();
 	e = getCoors(evt);
 	move(e.clientX, e.clientY);
+	return false;
 }
 
 function touchend(evt) {
 	endmove();
+	return false;
 }
 
 function setup(evt) {
@@ -190,8 +193,12 @@ function save() {
 	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhr.onreadystatechange = function() {
 		if ((xhr.readyState == 4) && (xhr.status == 200)) {
-			if (xhr.responseText.length > 0)
-				alert(xhr.responseText);
+			if(xhr.responseText != '1') {
+				//alert(xhr.responseText);
+				var evt = {};
+				evt.target = path;
+				erase(evt);
+			}
 		}
 	}; 
 	xhr.send(out);
