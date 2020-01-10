@@ -20,7 +20,7 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 var xmlns = "http://www.w3.org/2000/svg"
 var clicked = false;
 var res;
-var col = "blue";
+var col = "black";
 var last = Math.round((new Date()).getTime() / 1000.0);
 var size = "4";
 
@@ -64,7 +64,7 @@ function connect() {
 					}
 				}
 			}
-			setTimeout('connect()', 15);
+			setTimeout('connect()', 1000);
 		}
 	};
 	conn.send("last=" + last + "&url=" + window.here);

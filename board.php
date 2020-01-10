@@ -1,6 +1,6 @@
-<?php
-	/*
-Copyright (C) 2011 Eli Cohen
+<!DOCTYPE html>
+<?php /*
+Copyright (C) 2011-2020 Eli Cohen
 
 This file is part of DraWiki.
 
@@ -16,16 +16,30 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
-	*/
-?>
-<!DOCTYPE html>
+*/ ?>
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-	<link href="/static/default.css" type="text/css" rel="stylesheet"/>
 	<title>Multiplayer Paint</title>
+	<link href="/static/default.css" type="text/css" rel="stylesheet"/>
 	<script src="/static/page.js"></script>
 	<script data-ad-client="ca-pub-4649162581902265" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	<meta property="og:url"           content="https://<?php
+
+	print $_SERVER['HTTP_HOST'];
+	print $_SERVER['REQUEST_URI'];
+
+?>" />
+	<meta property="og:type"          content="website" />
+	<meta property="og:title"         content="Multiplayer Paint" />
+	<meta property="og:description"   content="Multiplayer drawing site" />
+	<meta property="og:image"         content="https://<?php
+
+	print $_SERVER['HTTP_HOST'];
+	print '/static/export.php?url=';
+	print $_SERVER['REQUEST_URI'];
+
+?>" />
 </head>
 <body>
 <div id="fb-root"></div>
@@ -33,19 +47,14 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 <div id="wrapper">
 	<div id="header">
 		<div id="logo">
-			<h1><a href="/"><?php
-	
-echo htmlentities($_SERVER['HTTP_HOST']);
+			<h1><?php
 
-?></a></h1>
-			<p><?php
+	if ($_SERVER['REQUEST_URI'] == '/')
+		echo htmlentities($_SERVER['HTTP_HOST']);
+	else
+		echo substr(htmlentities(urldecode($_SERVER['REQUEST_URI'])), 1);
 
-#	if ($_SERVER['REQUEST_URI'] == '/')
-#		echo 'drawingrooms';
-#	else
-	echo substr(htmlentities(urldecode($_SERVER['REQUEST_URI'])), 1);
-
-			?></p>
+			?></h1>
 		</div>
 	</div>
 	<div id="page">
@@ -70,31 +79,12 @@ echo htmlentities($_SERVER['HTTP_HOST']);
 		echo substr(htmlentities($_SERVER['REQUEST_URI']), 1);
 
 ?>" id="boardname" onkeydown="if (event.keyCode == 13) newboard()"/><input type="button" value="Go" onclick="newboard()"/>
-</p>
-
 <?php
 	if ($_SERVER['REQUEST_URI'] != '/') {
 ?>
-<p>Html code to embed this elsewhere:
+<a href="javascript:exportpng()">Export</a></p>
 <br/>
-<input style="width:100%;" type="text" readonly="readonly" value="&lt;embed src=&quot;http://<?php
-
-echo htmlentities($_SERVER['HTTP_HOST']);
-?>/static/board.php?url=<?php
-echo htmlentities($_SERVER['REQUEST_URI']);
-
-?>&quot; style=&quot;width:960px; height:480px; &quot; type=&quot;image/svg+xml&quot;&gt;
-"></p>
-
-<p>Right-click link to "save as" png:
-<br/>
-<a href="http://<?php
-
-echo htmlentities($_SERVER['HTTP_HOST']);
-?>/static/export.php?url=<?php
-echo htmlentities($_SERVER['REQUEST_URI']);
-
-?>">save png</a></p>
+<div id="export"></div>
 <?php
 	}
 ?>
@@ -102,9 +92,14 @@ echo htmlentities($_SERVER['REQUEST_URI']);
 	</div>
 	<div id="three-column">
 		<div id="tbox1">
+			<h2>Social Media</h2>
 			<ul class="style1">
-				<li>Copyright &copy; 2012-2020 Eli Cohen.</li>
-				<li>CSS by <a href="http://freecsstemplates.org/">FCT</a>.</li>
+<li><div><a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script></div><br/></li>
+<li><div><a data-pin-do="buttonBookmark" href="https://www.pinterest.com/pin/create/button/"></a></div><br/></li>
+<li><div class="fb-like" data-href="https://<?php
+echo htmlentities($_SERVER['HTTP_HOST']);
+echo htmlentities($_SERVER['REQUEST_URI']);
+?>" data-width="" data-layout="standard" data-action="like" data-size="small" data-share="true"></div><br/></li>
 			</ul>
 		</div>
 		<div id="tbox2">
@@ -112,19 +107,12 @@ echo htmlentities($_SERVER['REQUEST_URI']);
 			<p>It's a multiplayer website of wiki-style paint. Choose a whiteboard name to begin, and invite your friends.</p>
 		</div>
 		<div id="tbox3">
-			<h2>Social Media</h2>
-<div><a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script></div>
-<br/>
-<div><a data-pin-do="buttonBookmark" href="https://www.pinterest.com/pin/create/button/"></a></div>
-<br/>
-<div class="fb-like" data-href="https://<?php
-echo htmlentities($_SERVER['HTTP_HOST']);
-echo htmlentities($_SERVER['REQUEST_URI']);
-?>" data-width="" data-layout="standard" data-action="like" data-size="small" data-share="true"></div>
 		</div>
 	</div>
 <div id="footer">
 <p>
+</p>
+			<p>Copyright &copy; 2011-2020 Eli Cohen. Github URL: <a href="https://github.com/echoline/DraWiki">github.com/echoline/DraWiki</a>. CSS by <a href="http://freecsstemplates.org/">freecsstemplates.org</a>.
 </p>
 	</div>
 </div>
