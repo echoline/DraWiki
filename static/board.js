@@ -138,6 +138,7 @@ function getCoors(e) {
 
 function touchstart(evt) {
 	evt.preventDefault();
+	evt.stopPropagation();
 	e = getCoors(evt);
 	startmove(e.clientX, e.clientY);
 	return false;
@@ -145,6 +146,7 @@ function touchstart(evt) {
 
 function touchmove(evt) {
 	evt.preventDefault();
+	evt.stopPropagation();
 	e = getCoors(evt);
 	move(e.clientX, e.clientY);
 	return false;

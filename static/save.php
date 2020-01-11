@@ -61,7 +61,7 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 			die('7');
 		if ($paths[$i][3] < 4 || $paths[$i][3] > 16)
 			die('8');
-		if (!preg_match('/^(black|brown|red|orange|yellow|green|blue|purple|gray|white)$/', $paths[$i][2]))
+		if (!preg_match('/^(black|brown|red|orange|yellow|green|blue|purple|pink|gray|white)$/', $paths[$i][2]))
 			die('9');
 
 		mysqli_query($my_mysql, 'replace into paths values (\'' . $url

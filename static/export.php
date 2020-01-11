@@ -25,7 +25,7 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 	if ($my_mysql == NULL)
 		die ('mysqli_connect');
 
-	$url = mysqli_real_escape_string($my_mysql, strtolower($_GET['url']));
+	$url = mysqli_real_escape_string($my_mysql, htmlentities(strtolower($_GET['url'])));
 	$hash = substr(base_convert(md5($url), 16, 10), 0, 8);
 
 	header ('Content-type: image/png');
