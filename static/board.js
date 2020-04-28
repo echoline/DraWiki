@@ -20,7 +20,7 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 var xmlns = "http://www.w3.org/2000/svg"
 var clicked = false;
 var res;
-var col = "blue";
+var col = "black";
 var last = Math.round((new Date()).getTime() / 1000.0);
 var size = "4";
 
@@ -64,13 +64,15 @@ function connect() {
 					}
 				}
 			}
-			setTimeout('connect()', 15);
+			setTimeout('connect()', 1000);
 		}
 	};
 	conn.send("last=" + last + "&url=" + window.here);
 }
 
 function startmove(X, Y) {
+	X = (""+X).replace(/\.(.*)$/, "");
+	Y = (""+Y).replace(/\.(.*)$/, "");
 	res = Math.floor (Math.random() * 1000001);
 	var p = document.getElementById(res);
 	if (p == null) {
@@ -104,6 +106,8 @@ function move(X, Y) {
 	if (clicked == false)
 		return;
 
+	X = (""+X).replace(/\.(.*)$/, "");
+	Y = (""+Y).replace(/\.(.*)$/, "");
 	var dx = X - window.lastx;
 	var dy = Y - window.lasty;
 	var dist = Math.sqrt(dx*dx + dy*dy);
@@ -138,6 +142,7 @@ function getCoors(e) {
 
 function touchstart(evt) {
 	evt.preventDefault();
+	evt.stopPropagation();
 	e = getCoors(evt);
 	startmove(e.clientX, e.clientY);
 	return false;
@@ -145,6 +150,7 @@ function touchstart(evt) {
 
 function touchmove(evt) {
 	evt.preventDefault();
+	evt.stopPropagation();
 	e = getCoors(evt);
 	move(e.clientX, e.clientY);
 	return false;

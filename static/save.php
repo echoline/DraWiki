@@ -23,7 +23,7 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 	$ret = 0;
 
 	if (!isset($_POST['json']) || !isset($_POST['url']))
-		die ("post, haste!");
+		die ("no");
 
 	require '../login.php';
 
@@ -31,9 +31,9 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 	if ($my_mysql == NULL)
 		die (mysqli_error($my_mysql));
 
-	$url = mysqli_real_escape_string($my_mysql, strtolower($_POST['url']));
+	$url = mysqli_real_escape_string($my_mysql, urlencode(strtolower($_POST['url'])));
 
-	if (($url == '/') && ($CAN_EDIT_MAIN == FALSE)) {
+	if (($url == '') && ($CAN_EDIT_MAIN == FALSE)) {
 		echo $ret;
 		exit (0);
 	}
@@ -47,21 +47,21 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 	$paths = $json['paths'];
 
 	for ($i = 0; $i < count($paths); $i++) {
-		if (!preg_match('/^M [0-9\.]+ [0-9\.]+/', $paths[$i][1]))
+		if (!preg_match('/^M [0-9]+ [0-9]+/', $paths[$i][1]))
 			die('2');
-		if (preg_match('/[^ML\-0-9\.\ ]/', $paths[$i][1]))
+		if (preg_match('/[^ML\-0-9\ ]/', $paths[$i][1]))
 			die('3');
 		if (preg_match('/L[^ ]/', $paths[$i][1]))
 			die('4');
 		if (preg_match('/[^ ]L/', $paths[$i][1]))
 			die('5');
-		if (preg_match('/[^ \-0-9\.]0-9/', $paths[$i][1]))
+		if (preg_match('/[^ \-0-9]0-9/', $paths[$i][1]))
 			die('6');
 		if (!preg_match('/^[0-9]+$/', $paths[$i][3]))
 			die('7');
 		if ($paths[$i][3] < 4 || $paths[$i][3] > 16)
 			die('8');
-		if (!preg_match('/^(black|brown|red|orange|yellow|green|blue|purple|gray|white)$/', $paths[$i][2]))
+		if (!preg_match('/^(black|brown|red|orange|yellow|green|blue|purple|pink|gray|white)$/', $paths[$i][2]))
 			die('9');
 
 		mysqli_query($my_mysql, 'replace into paths values (\'' . $url
@@ -69,7 +69,7 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 		    htmlentities(mysqli_real_escape_string($my_mysql,
 		    $paths[$i][1])) . '\', \'' .
 		    htmlentities(mysqli_real_escape_string($my_mysql,
-		    $paths[$i][2])) . '\', \'' . $hash . '\', \'' . time() .
+		    $paths[$i][2])) . '\', \'' . $hash . '\', \'' . microtime(TRUE) .
 		    '\', false, \'' .
 		    htmlentities(mysqli_real_escape_string($my_mysql,
 		    $paths[$i][3])) . '\')') or
