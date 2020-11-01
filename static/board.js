@@ -133,6 +133,10 @@ function mouseup(evt) {
 	endmove();
 }
 
+function mouseout(evt) {
+	endmove();
+}
+
 function getCoors(e) {
 	if (e.touches && e.touches.length) { 	// iPhone
 		return e.touches[0];
@@ -141,22 +145,24 @@ function getCoors(e) {
 }
 
 function touchstart(evt) {
-	evt.preventDefault();
-	evt.stopPropagation();
+	if (evt.touches.length > 1)
+		return false;
 	e = getCoors(evt);
 	startmove(e.clientX, e.clientY);
 	return false;
 }
 
 function touchmove(evt) {
-	evt.preventDefault();
-	evt.stopPropagation();
+	if (evt.touches.length > 1)
+		return false;
 	e = getCoors(evt);
 	move(e.clientX, e.clientY);
 	return false;
 }
 
 function touchend(evt) {
+	if (evt.touches.length > 1)
+		return false;
 	endmove();
 	return false;
 }
@@ -211,10 +217,20 @@ function save() {
 }
 
 function color(n) {
+	var cs = document.getElementsByClassName("color");
+	for (var i = 0; i < cs.length; i++) {
+		cs[i].setAttributeNS(null, "stroke", "black");
+	}
+	n.setAttributeNS(null, "stroke", "red");
 	col = n.getAttributeNS(null, "fill");
 }
 
 function brush(n) {
+	document.getElementById('brush4').setAttributeNS(null, "stroke", "black");
+	document.getElementById('brush8').setAttributeNS(null, "stroke", "black");
+	document.getElementById('brush12').setAttributeNS(null, "stroke", "black");
+	document.getElementById('brush16').setAttributeNS(null, "stroke", "black");
+	document.getElementById('brush' + n).setAttributeNS(null, "stroke", "red");
 	size = n;
 }
 

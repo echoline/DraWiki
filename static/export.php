@@ -28,8 +28,8 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 	$url = mysqli_real_escape_string($my_mysql, urlencode(strtolower($_GET['url'])));
 	$hash = substr(base_convert(md5($url), 16, 10), 0, 8);
 
-	header ('Content-type: image/png');
-	header ('Content-Disposition: attachment; filename="' . $url . '.png"; filename*=UTF-8\'\'' . $url . '.png');
+	header ('Content-Type: image/png');
+	header ('Content-Disposition: attachment; filename="' . $url . '.png";');
 
 	while(file_exists("/DraWiki/static/tmp/" . $hash . ".lock")) usleep(1000000);
 	touch ("/DraWiki/static/tmp/" . $hash . ".lock");
