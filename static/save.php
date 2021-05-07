@@ -51,12 +51,14 @@ along with DraWiki.  If not, see <http://www.gnu.org/licenses/>.
 			die('2');
 		if (preg_match('/[^ML\-0-9\ ]/', $paths[$i][1]))
 			die('3');
-		if (preg_match('/L[^ ]/', $paths[$i][1]))
+		if (preg_match('/L[^ ][^0-9]/', $paths[$i][1]))
 			die('4');
-		if (preg_match('/[^ ]L/', $paths[$i][1]))
+		if (preg_match('/[^0-9][^ ]L/', $paths[$i][1]))
 			die('5');
 		if (preg_match('/[^ \-0-9]0-9/', $paths[$i][1]))
 			die('6');
+		if (preg_match('/^.+M/', $paths[$i][1]))
+			die('6.1');
 		if (!preg_match('/^[0-9]+$/', $paths[$i][3]))
 			die('7');
 		if ($paths[$i][3] < 4 || $paths[$i][3] > 16)

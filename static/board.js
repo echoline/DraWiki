@@ -81,12 +81,12 @@ function startmove(X, Y) {
 		p.setAttributeNS(null, "stroke", col);
 		p.setAttributeNS(null, "fill", "none");
 		p.setAttributeNS(null, "stroke-width", size);
-		p.setAttributeNS(null, "d", "M " + X + " " + Y);
+		p.setAttributeNS(null, "d", "M " + (parseInt(X)-30) + " " + Y);
 		//p.oncontextmenu=erase;
 		document.getElementById("unsaved").appendChild(p);
 	} else {
 		var d = p.getAttributeNS(null, "d");
-		d = d.replace(/$/, " L " + X + " " + Y);
+		d = d.replace(/$/, " L " + (parseInt(X)-30) + " " + Y);
 		p.setAttributeNS(null, "d", d);
 	}
 	clicked = true;
@@ -116,7 +116,7 @@ function move(X, Y) {
 		window.lasty = Y;
 		var p = document.getElementById(res);
 		var d = p.getAttributeNS(null, "d");
-		d = d.replace(/$/, " L " + X + " " + Y);
+		d = d.replace(/$/, " L " + (parseInt(X)-30) + " " + Y);
 		p.setAttributeNS(null, "d", d);
 	}
 }
